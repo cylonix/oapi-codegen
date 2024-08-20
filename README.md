@@ -1,5 +1,30 @@
 # `oapi-codegen`
 
+## Why `cylonix oapi-codegen`
+
+`cylonix oapi-codegen` is a fork of `oapi-codegen` for the following two key changes that may be pushed to upstream project in the future.
+
+- Handlers instance struct
+Generate strict server implementation with a struct listing all the handlers similar to openapi 2.0 go server implementation.
+
+- Authenticator support
+Generate code to support authentication directly instead of hand crafted middleware.
+
+### How to use `cylonix oapi-codegen`
+
+#### Install
+
+```sh
+$ go install github.com/cylonix/oapi-codegen/v2/cmd/oapi-codegen@latest
+$ oapi-codegen -version
+```
+
+#### Follow the rest of the document
+
+Will add an example on how to use the two changes mentioned above.
+
+## The following is the original `oapi-codegen` README
+
 `oapi-codegen` is a command-line tool and library to convert OpenAPI specifications to Go code, be it [server-side implementations](#generating-server-side-boilerplate), [API clients](#generating-api-clients), or simply [HTTP models](#generating-api-models).
 
 Using `oapi-codegen` allows you to reduce the boilerplate required to create or integrate with services based on [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md), and instead focus on writing your business logic, and working on the real value-add for your organisation.

@@ -167,6 +167,11 @@ type Constants struct {
 	EnumDefinitions []EnumDefinition
 }
 
+type Authenticator struct {
+	// SecuritySchemeProviderNames holds all provider names for security schemes.
+	SecuritySchemeProviderNames []string
+}
+
 // TypeDefinition describes a Go type definition in generated code.
 //
 // Let's use this example schema:

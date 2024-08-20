@@ -1,0 +1,7 @@
+{{- if gt (len .SecuritySchemeProviderNames) 0 }}
+type Authenticator interface {
+{{range $ProviderName := .SecuritySchemeProviderNames}}
+    {{- $ProviderName | sanitizeGoIdentity | ucFirst}}Auth(r *http.Request) (interface{}, error)
+{{end}}
+}
+{{end}}

@@ -25,7 +25,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
-	"github.com/oapi-codegen/oapi-codegen/v2/pkg/util"
+	"github.com/cylonix/oapi-codegen/v2/pkg/util"
 )
 
 type ParameterDefinition struct {
@@ -582,7 +582,7 @@ func OperationDefinitions(swagger *openapi3.T, initialismOverrides bool) ([]Oper
 			}
 			// All the parameters required by a handler are the union of the
 			// global parameters and the local parameters.
-			allParams, err := CombineOperationParameters(globalParams, localParams)
+			allParams, err := CombineOperationParameters(op.OperationID, globalParams, localParams) // __CYLONIX_MOD__
 			if err != nil {
 				return nil, err
 			}
@@ -1029,6 +1029,10 @@ func GenerateStrictServer(t *template.Template, operations []OperationDefinition
 		templates = append(templates, "strict/strict-iris-interface.tmpl", "strict/strict-iris.tmpl")
 	}
 
+	// __BEGIN_CYLONIX_MOD__
+	templates = append(templates, "strict/strict-server.tmpl")
+	// __END_CYLONIX_MOD__
+
 	return GenerateTemplates(templates, t, operations)
 }
 
@@ -1068,7 +1072,7 @@ func GenerateTemplates(templates []string, t *template.Template, ops interface{}
 }
 
 // CombineOperationParameters combines the Parameters defined at a global level (Parameters defined for all methods on a given path) with the Parameters defined at a local level (Parameters defined for a specific path), preferring the locally defined parameter over the global one
-func CombineOperationParameters(globalParams []ParameterDefinition, localParams []ParameterDefinition) ([]ParameterDefinition, error) {
+func CombineOperationParameters(op string, globalParams []ParameterDefinition, localParams []ParameterDefinition) ([]ParameterDefinition, error) { // __CYLONIX_MOD__
 	allParams := make([]ParameterDefinition, 0, len(globalParams)+len(localParams))
 	dupCheck := make(map[string]map[string]string)
 	for _, p := range localParams {
@@ -1079,7 +1083,7 @@ func CombineOperationParameters(globalParams []ParameterDefinition, localParams 
 			dupCheck[p.In][p.ParamName] = "local"
 			allParams = append(allParams, p)
 		} else {
-			return nil, fmt.Errorf("duplicate local parameter %s/%s", p.In, p.ParamName)
+			return nil, fmt.Errorf("duplicate local parameter for %s: %s/%s", op, p.In, p.ParamName) // __CYLONIX_MOD__
 		}
 	}
 	for _, p := range globalParams {

@@ -33,7 +33,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"golang.org/x/tools/imports"
 
-	"github.com/oapi-codegen/oapi-codegen/v2/pkg/util"
+	"github.com/cylonix/oapi-codegen/v2/pkg/util"
 )
 
 // Embed the templates directory
@@ -166,7 +166,7 @@ func Generate(spec *openapi3.T, opts Configuration) (string, error) {
 		return "", fmt.Errorf("error getting operation imports: %w", err)
 	}
 
-	var typeDefinitions, constantDefinitions string
+	var typeDefinitions, constantDefinitions, authenticators string // __CYLONIX_MOD__
 	if opts.Generate.Models {
 		typeDefinitions, err = GenerateTypeDefinitions(t, spec, ops, opts.OutputOptions.ExcludeSchemas)
 		if err != nil {
@@ -177,6 +177,13 @@ func Generate(spec *openapi3.T, opts Configuration) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("error generating constants: %w", err)
 		}
+
+		// __BEGIN_CYLONIX_MOD__
+		authenticators, err = GenerateAuthenticator(t, ops)
+		if err != nil {
+			return "", fmt.Errorf("error generating authenticator: %w", err)
+		}
+		// __END_CYLONIX_MOD__
 
 		imprts, err := GetTypeDefinitionsImports(spec, opts.OutputOptions.ExcludeSchemas)
 		if err != nil {
@@ -303,6 +310,13 @@ func Generate(spec *openapi3.T, opts Configuration) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error writing imports: %w", err)
 	}
+
+	// __BEGIN_CYLONIX_MOD__
+	_, err = w.WriteString(authenticators)
+	if err != nil {
+		return "", fmt.Errorf("error writing authenticators: %w", err)
+	}
+	// _END_CYLONIX_MODE__
 
 	_, err = w.WriteString(constantDefinitions)
 	if err != nil {
@@ -480,12 +494,8 @@ func GenerateTypeDefinitions(t *template.Template, swagger *openapi3.T, ops []Op
 	return typeDefinitions, nil
 }
 
-// GenerateConstants generates operation ids, context keys, paths, etc. to be exported as constants
-func GenerateConstants(t *template.Template, ops []OperationDefinition) (string, error) {
-	constants := Constants{
-		SecuritySchemeProviderNames: []string{},
-	}
-
+// __BEGIN_CYLONIX_MOD__
+func securitySchemeProviderNames(ops []OperationDefinition) []string {
 	providerNameMap := map[string]struct{}{}
 	for _, op := range ops {
 		for _, def := range op.SecurityDefinitions {
@@ -500,8 +510,25 @@ func GenerateConstants(t *template.Template, ops []OperationDefinition) (string,
 	}
 
 	sort.Strings(providerNames)
+	return providerNames
+}
 
-	constants.SecuritySchemeProviderNames = append(constants.SecuritySchemeProviderNames, providerNames...)
+// GenerateAuthenticator generates authenticator interface.
+func GenerateAuthenticator(t *template.Template, ops []OperationDefinition) (string, error) {
+	authenticator := Authenticator{
+		SecuritySchemeProviderNames: securitySchemeProviderNames(ops),
+	}
+
+	return GenerateTemplates([]string{"authenticator.tmpl"}, t, authenticator)
+}
+
+// __END_CYLONIX_MOD__
+
+// GenerateConstants generates operation ids, context keys, paths, etc. to be exported as constants
+func GenerateConstants(t *template.Template, ops []OperationDefinition) (string, error) {
+	constants := Constants{
+		SecuritySchemeProviderNames: securitySchemeProviderNames(ops),
+	}
 
 	return GenerateTemplates([]string{"constants.tmpl"}, t, constants)
 }

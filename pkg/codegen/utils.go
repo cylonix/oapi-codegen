@@ -295,9 +295,25 @@ var camelCaseMatchParts = regexp.MustCompile(`[\p{Lu}\d]+([\p{Ll}\d]+|$)`)
 // initialismsMap stores initialisms as "lower(initialism) -> initialism" map.
 // List of initialisms was taken from https://staticcheck.io/docs/configuration/options/#initialisms.
 var initialismsMap = makeInitialismsMap([]string{
-	"ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON",
-	"QPS", "RAM", "RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP", "UI", "GID", "UID", "UUID",
-	"URI", "URL", "UTF8", "VM", "XML", "XMPP", "XSRF", "XSS", "SIP", "RTP", "AMQP", "DB", "TS",
+	// __BEGIN_CYLONIX_MOD__
+	"ACL", "AMQP", "API", "ASCII",
+	"CIDR", "CPU", "CSS",
+	"DB", "DNS",
+	"EOF",
+	"FQDN",
+	"GID", "GUID",
+	"HTML", "HTTP", "HTTPS",
+	"ID", "IP", "IPAM", "IPv4", "IPv6",
+	"JSON",
+	"PC",
+	"QPS",
+	"RAM", "RPC", "RTP",
+	"SIP", "SLA", "SMTP", "SQL", "SSH",
+	"TCP", "TLS", "TS", "TTL",
+	"UDP", "UI", "UID", "URI", "URL", "UTF8", "UUID",
+	"VM",
+	"XML", "XMPP", "XSRF", "XSS",
+	// __END_CYLONIX_MOD__
 })
 
 func makeInitialismsMap(l []string) map[string]string {

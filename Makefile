@@ -50,3 +50,9 @@ tidy-ci:
 	tidied -verbose
 	# then, for all child modules, use a module-managed `Makefile`
 	git ls-files '**/*go.mod' -z | xargs -0 -I{} bash -xc 'cd $$(dirname {}) && make tidy-ci'
+
+# __BEGIN_CYLINIX_MOD__
+.PHONY: install
+install:
+	cd cmd/oapi-codegen; go install oapi-codegen.go
+# __END_CYLONIX_MOD__

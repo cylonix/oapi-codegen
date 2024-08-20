@@ -139,6 +139,7 @@
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+GetAuthenticator() Authenticator
 {{range .}}{{.SummaryAsComment }}
 // ({{.Method}} {{.Path}})
 {{$opid := .OperationId -}}

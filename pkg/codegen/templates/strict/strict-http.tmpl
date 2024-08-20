@@ -27,10 +27,33 @@ type strictHandler struct {
     options StrictHTTPServerOptions
 }
 
+const SecurityAuthContextKey = "Secutiry-Auth"
+
 {{range .}}
     {{$opid := .OperationId}}
     // {{$opid}} operation middleware
     func (sh *strictHandler) {{.OperationId}}(w http.ResponseWriter, r *http.Request{{genParamArgs .PathParams}}{{if .RequiresParamObject}}, params {{.OperationId}}Params{{end}}) {
+        {{/* __BEGIN_CYLONIX_MOD__ */}}
+        {{- if gt (len .SecurityDefinitions) 0 }}
+            var auth interface{}
+            {{range $i, $s := .SecurityDefinitions}}
+                {{- if gt $i 0 }}
+                    if auth == nil {
+                {{end}}
+                auth, _ = sh.ssi.GetAuthenticator().{{.ProviderName | sanitizeGoIdentity | ucFirst}}Auth(r)
+                {{- if gt $i 0 }}
+                    }
+                {{end}}
+            {{end}}
+            if auth == nil {
+                http.Error(w, "Unauthorized!", http.StatusUnauthorized)
+                return
+            }
+            ctx := context.WithValue(r.Context(), SecurityAuthContextKey, auth)
+            r = r.WithContext(ctx)
+            {{end}}
+        {{/* __END_CYLONIX_MOD__ */}}
+
         var request {{$opid | ucFirst}}RequestObject
 
         {{range .PathParams -}}
