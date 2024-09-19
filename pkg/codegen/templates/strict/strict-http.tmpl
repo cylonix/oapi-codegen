@@ -27,7 +27,8 @@ type strictHandler struct {
     options StrictHTTPServerOptions
 }
 
-const SecurityAuthContextKey = "Secutiry-Auth"
+type StrictHTTPContextKeyType string
+const SecurityAuthContextKey = StrictHTTPContextKeyType("Secutiry-Auth")
 
 {{range .}}
     {{$opid := .OperationId}}

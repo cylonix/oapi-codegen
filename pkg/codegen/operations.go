@@ -511,15 +511,6 @@ func (r ResponseContentDefinition) IsJSON() bool {
 	return util.IsMediaTypeJson(r.ContentType)
 }
 
-// __BEGIN_CYLONIX_MOD__
-// IsArray returns whether this is an array type response.
-func (r ResponseContentDefinition) IsArray() bool {
-	return r.Schema.ArrayType != nil ||
-		(r.Schema.OAPISchema != nil && r.Schema.OAPISchema.Type != nil &&
-			r.Schema.OAPISchema.Type.Is("array"))
-}
-// __END_CYLONIX_MOD__
-
 type ResponseHeaderDefinition struct {
 	Name   string
 	GoName string

@@ -89,16 +89,6 @@
                 {{$hasBodyVar := or ($hasHeaders) (not $fixedStatusCode) (not .IsSupported)}}
                 {{if .IsJSON -}}
                     {{$hasUnionElements := ne 0 (len .Schema.UnionElements)}}
-                    {{/* __BEGIN_CYLONIX_MOD__ */}}
-                    {{/* Workaround for golang json encoding nil slice or array to 'null' value: */}}
-                    {{/* https://github.com/golang/go/issues/27589 */}}
-                    {{/* */}}
-                    {{if .IsArray -}}
-                        if response == nil {
-                            response = {{$receiverTypeName}}{}
-                        }
-                    {{end -}}
-                    {{/* __END_CYLONIX_MOD__ */}}
                     return json.NewEncoder(w).Encode(response{{if $hasBodyVar}}.Body{{end}}{{if $hasUnionElements}}.union{{end}})
                 {{else if eq .NameTag "Text" -}}
                     _, err := w.Write([]byte({{if $hasBodyVar}}response.Body{{else}}response{{end}}))
