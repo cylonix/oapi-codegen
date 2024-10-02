@@ -2,23 +2,23 @@
 
 // StrictServer implements StrictServerInterface with handlers to be customized.
 type StrictServer struct {
-Authenticator Authenticator
-{{range .}}{{.SummaryAsComment }}
-// ({{.Method}} {{.Path}})
-{{$opid := .OperationId -}}
-{{$opid}}Handler func(ctx context.Context, request {{$opid | ucFirst}}RequestObject) ({{$opid | ucFirst}}ResponseObject, error)
-{{end}}{{/* range . */ -}}
+    Authenticator Authenticator
+    {{range .}}{{.SummaryAsComment }}
+        // ({{.Method}} {{.Path}})
+        {{$opid := .OperationId}}
+        {{$opid}}Handler func(ctx context.Context, request {{$opid | ucFirst}}RequestObject) ({{$opid | ucFirst}}ResponseObject, error)
+    {{end}}{{/* range . */}}
 }
 
-{{range .}}{{.SummaryAsComment }}
-// ({{.Method}} {{.Path}})
-{{$opid := .OperationId -}}
-func (s *StrictServer) {{$opid}}(ctx context.Context, request {{$opid | ucFirst}}RequestObject) ({{$opid | ucFirst}}ResponseObject, error) {
-	if s.{{$opid}}Handler != nil {
-        return s.{{$opid}}Handler(ctx, request)
+{{range .}}{{.SummaryAsComment}}
+    // ({{.Method}} {{.Path}})
+    {{$opid := .OperationId}}
+    func (s *StrictServer) {{$opid}}(ctx context.Context, request {{$opid | ucFirst}}RequestObject) ({{$opid | ucFirst}}ResponseObject, error) {
+	    if s.{{$opid}}Handler != nil {
+            return s.{{$opid}}Handler(ctx, request)
+        }
+        return nil, errors.New("api {{$opid}} is not implemented")
     }
-    return nil, errors.New("api {{$opid}} is not implemented")
-}
 {{end}}
 
 func (s StrictServer) GetAuthenticator() Authenticator {
